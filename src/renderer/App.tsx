@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources';
+import dotenv from 'dotenv'; // Add this import
 
 // import './App.css';
 
@@ -11,6 +12,8 @@ function Hello() {
   // const [qstate, setQState] = useState<"ask"|"answer">('ask');
   const [conversation, setConversation] = useState<Array<ChatCompletionMessageParam>>([{role:"system",content:"You are helping my grandma use her computer. She doesn't understand computers that much. Answer questions in a compassionate and simple way, asking clarifying questions when necessary. She is using a Mac."}]);
   const lastAssistantMessage = conversation.findLast(message => message.role === "assistant")?.content;
+  console.log("APIkey",process.env.REACT_APP_OPENAI_API_KEY)
+
   const handleSubmit =  async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
     const target = e.currentTarget; // Get the current target
@@ -22,8 +25,10 @@ function Hello() {
     //   system: "You are helping my grandma use her computer. Answer questions in a compassionate and simple way, asking clarifying questions when necessary.",
     //   messages: [updatedConvo],
     // });
+    console.log(process.env.REACT_APP_OPENAI_API_KEY)
+    // dotenv.config(); // Load environment variables
     const client = new OpenAI({
-      apiKey: process.env['OPENAI_API_KEY'], // This is the default and can be omitted
+      apiKey: process.env.REACT_APP_OPENAI_API_KEY // This is the default and can be omitted
     });
     if (updatedConvo.length > 0){
       const msg = await client.chat.completions.create({

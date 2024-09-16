@@ -34,4 +34,5 @@ module.exports = {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
   },
+  // env:{"node":true}
 };

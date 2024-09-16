@@ -10,6 +10,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
+// import dotenv from "dotenv";
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
@@ -22,6 +23,7 @@ const manifest = path.resolve(webpackPaths.dllPath, 'renderer.json');
 const skipDLLs =
   module.parent?.filename.includes('webpack.config.renderer.dev.dll') ||
   module.parent?.filename.includes('webpack.config.eslint');
+// dotenv.config();
 
 /**
  * Warn if the DLL is not built
@@ -146,6 +148,9 @@ const configuration: webpack.Configuration = {
     new webpack.LoaderOptionsPlugin({
       debug: true,
     }),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_OPENAI_API_KEY': JSON.stringify(process.env.REACT_APP_OPENAI_API_KEY),
+    }),
 
     new ReactRefreshWebpackPlugin(),
 
@@ -208,6 +213,15 @@ const configuration: webpack.Configuration = {
       return middlewares;
     },
   },
+  // resolve: {
+  //    fallback: {
+  //      path: require.resolve('path-browserify'),
+  //      os: require.resolve('os-browserify/browser'),
+  //      crypto: require.resolve('crypto-browserify'),
+  //    }
+  // }
 };
+console.log("openai key define",process.env.REACT_APP_OPENAI_API_KEY);
+
 
 export default merge(baseConfig, configuration);
