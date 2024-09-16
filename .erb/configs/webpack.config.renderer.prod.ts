@@ -111,6 +111,10 @@ const configuration: webpack.Configuration = {
       DEBUG_PROD: false,
     }),
 
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_OPENAI_API_KEY': JSON.stringify(process.env.REACT_APP_OPENAI_API_KEY),
+    }),
+
     new MiniCssExtractPlugin({
       filename: 'style.css',
     }),
