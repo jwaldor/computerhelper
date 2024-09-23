@@ -15,9 +15,7 @@ app.use(
   })
 );
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // This is the default and can be omitted
-});
+const client = new OpenAI();
 app.post("/chat", async (req, res) => {
   const conversation = req.body.conversation;
   console.log("conversation", conversation);
