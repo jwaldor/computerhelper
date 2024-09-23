@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "bun server.ts"
+    "start": "node server.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.21"
