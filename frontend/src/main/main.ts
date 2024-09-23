@@ -9,7 +9,15 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, Tray, nativeImage, Menu } from 'electron';
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  Tray,
+  nativeImage,
+  Menu,
+} from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -92,6 +100,7 @@ const createWindow = async () => {
       mainWindow.minimize();
     } else {
       mainWindow.show();
+      mainWindow.close();
     }
   });
 
@@ -112,64 +121,62 @@ const createWindow = async () => {
   // eslint-disable-next-line
   new AppUpdater();
 
-
-  
   app.whenReady().then(() => {
     const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
-  
+      ? path.join(process.resourcesPath, 'assets')
+      : path.join(__dirname, '../../assets');
+
     const getAssetPath = (...paths: string[]): string => {
       return path.join(RESOURCES_PATH, ...paths);
     };
-    const icon = nativeImage.createFromPath(getAssetPath('icons/48x48.png')) // Updated path to the icon
-    tray = new Tray(icon)
+    const icon = nativeImage.createFromPath(getAssetPath('icons/48x48.png')); // Updated path to the icon
+    tray = new Tray(icon);
     const contextMenu = Menu.buildFromTemplate([
       // { label: 'Item1', type: 'radio' },
       // { label: 'Item2', type: 'radio' },
       // { label: 'Item3', type: 'radio', checked: true },
       // { label: 'Item4', type: 'radio' }
-    ])
-    
-    tray.setContextMenu(contextMenu)
-    tray.setToolTip('This is my application')
-    tray.setTitle('Computer helper artificial intelligence')
-    // Call createPopupWindow when the tray icon is clicked
-  tray.on('click', () => {
-    if (popupWindow) {
-      popupWindow.focus(); // Bring to front if already open
-    } else {
-      const createPopupWindow = () => {
-        popupWindow = new BrowserWindow({
-          width: 300,
-          height: 200,
-          frame: false, // Frameless window
-          alwaysOnTop: true, // Keep it above other windows
-          x: tray.getBounds().x, // Position it relative to the tray
-          y: tray.getBounds().y,
-          webPreferences: {
-            nodeIntegration: true,
-            contextIsolation: false,
-          },
-        });
-      
+    ]);
 
-        popupWindow.loadURL(resolveHtmlPath('index.html')); // Assuming your React app runs on this URL
-      
-        popupWindow.on('closed', () => {
-          popupWindow = null;
-        });
-      };
-      createPopupWindow(); // Create new popup window
-    }
-  });
+    tray.setContextMenu(contextMenu);
+    tray.setToolTip('This is my application');
+    tray.setTitle('Computer helper artificial intelligence');
+    // Call createPopupWindow when the tray icon is clicked
+    tray.on('click', () => {
+      if (popupWindow) {
+        popupWindow.focus(); // Bring to front if already open
+      } else {
+        const createPopupWindow = () => {
+          popupWindow = new BrowserWindow({
+            width: 300,
+            height: 200,
+            frame: false, // Frameless window
+            alwaysOnTop: true, // Keep it above other windows
+            x: tray.getBounds().x, // Position it relative to the tray
+            y: tray.getBounds().y,
+            webPreferences: {
+              nodeIntegration: true,
+              contextIsolation: false,
+            },
+          });
+
+          popupWindow.loadURL(resolveHtmlPath('index.html')); // Assuming your React app runs on this URL
+
+          popupWindow.on('closed', () => {
+            popupWindow = null;
+          });
+        };
+        createPopupWindow(); // Create new popup window
+      }
+    });
     // note: your contextMenu, Tooltip and Title code will go here!
-  })
-  
+  });
 };
 
-
-
+ipcMain.on('hide-window', () => {
+  const win = BrowserWindow.getFocusedWindow();
+  if (win) win.hide();
+});
 
 /**
  * Add event listeners...
@@ -195,4 +202,4 @@ app
   })
   .catch(console.log);
 
-  let tray
+let tray;
